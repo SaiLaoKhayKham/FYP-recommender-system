@@ -1,0 +1,76 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Your Orders{% endblock %}
+
+{% block content %}
+
+<br>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+
+  </head>
+  <div class="mx-auto bg-light" style="width: 700px;">
+    <br>
+    <div class="container">
+    
+<h2 style="font-size: 24px; text-align: center; margin-bottom: 20px;">Your Customers' Orders (Latest on Top)</h2>
+
+{% if orders %}
+    <!-- Filter buttons -->
+    <div id="filter-buttons">
+        <button class="btn btn-primary" onclick="filterOrders('all')">All Orders</button>
+        <button class="btn btn-primary" onclick="filterOrders('completed')">Completed</button>
+        <button class="btn btn-primary" onclick="filterOrders('not-completed')">Yet to be completed</button>
+    </div>
+    <br>
+    <ul>
+        {% for order in orders %}
+            <li class="order {% if order.order_status == 'Completed' %}completed{% elif order.order_status == 'Yet to be completed' %}not-completed{% endif %}">
+                Order ID: {{ order.order_id }}<br>
+                Order Status: {{ order.order_status }}<br>
+                Order Created Time: {{ order.order_created_time }}<br>
+                Total Price: ${{ order.total_price }}<br>
+                Number of Items: {{ order.num_of_items }}<br>
+                Delivery Address: {{ order.delivery_address }}<br>
+                <a href="{% url 'order_detail' order.order_id %}">View Order Details</a>
+
+                <!-- Add more details or links as needed -->
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No orders found.</p>
+{% endif %}
+<p id="no-orders-message" style="display: none;">No items found for the selected category.</p>
+
+
+<script>
+    function filterOrders(status) {
+    var orderItems = document.getElementsByClassName('order');
+
+    for (var i = 0; i < orderItems.length; i++) {
+        var orderItem = orderItems[i];
+        var itemStatus = orderItem.classList.contains('completed') ? 'completed' : ('not-completed');
+
+        if (status === 'all' || itemStatus === status) {
+            orderItem.style.display = 'block';
+        } else {
+            orderItem.style.display = 'none';
+        }
+    }
+
+    // Show message when there are no orders for the selected category
+    var noOrdersMessage = document.getElementById('no-orders-message');
+    if (noOrdersMessage) {
+        var visibleOrders = Array.from(orderItems).filter(item => item.style.display === 'block');
+        noOrdersMessage.style.display = visibleOrders.length > 0 ? 'none' : 'block';
+    }
+}
+</script>
+</div>
+<br>
+</div>
+<br>
+
+{% endblock %}
